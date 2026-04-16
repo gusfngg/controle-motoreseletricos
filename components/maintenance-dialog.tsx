@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ReactNode, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { FileUp, Wrench } from "lucide-react";
 import { updateMaintenanceDetails } from "@/lib/actions";
 import { Motor } from "@/types/motor";
@@ -28,6 +29,7 @@ export function MaintenanceDialog({
   motor,
   children,
 }: MaintenanceDialogProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -44,6 +46,7 @@ export function MaintenanceDialog({
       }
 
       setOpen(false);
+      router.refresh();
     });
   }
 

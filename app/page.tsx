@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getMotors, getStats } from "@/lib/actions";
 import { Motor, MotorStats } from "@/types/motor";
 import { MotorTable } from "@/components/motor-table";
+import { CurrentTimeBadge } from "@/components/current-time-badge";
 import { Button } from "@/components/ui/button";
 import {
   AlertTriangle,
@@ -118,17 +119,7 @@ export default async function HomePage() {
       <main className="mx-auto max-w-screen-xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         <div className="rounded-[24px] border border-slate-200 bg-white p-3 shadow-sm">
           <div className="flex gap-2 overflow-x-auto pb-1">
-            <div className="min-w-fit rounded-[20px] bg-slate-950 px-3 py-2 text-white">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-white/50">
-                Atualizado
-              </p>
-              <p className="mt-0.5 text-xs font-medium text-white/82">
-                {new Intl.DateTimeFormat("pt-BR", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                }).format(new Date())}
-              </p>
-            </div>
+            <CurrentTimeBadge />
             {statCards.map((card) => {
               const Icon = card.icon;
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +26,7 @@ export function DeleteMotorButton({
   descricao,
   mode = "icon",
 }: DeleteMotorButtonProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -32,6 +34,7 @@ export function DeleteMotorButton({
     startTransition(async () => {
       await deleteMotor(id);
       setOpen(false);
+      router.refresh();
     });
   }
 
@@ -41,7 +44,7 @@ export function DeleteMotorButton({
         {mode === "full" ? (
           <Button
             variant="outline"
-            className="flex-1 border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+            className="h-11 flex-1 rounded-xl border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
           >
             <Trash2 className="h-4 w-4" />
             Excluir

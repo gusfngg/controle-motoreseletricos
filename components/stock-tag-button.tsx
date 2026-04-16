@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Archive, LoaderCircle } from "lucide-react";
 import { toggleMotorStock } from "@/lib/actions";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ export function StockTagButton({
   active,
   compact = false,
 }: StockTagButtonProps) {
+  const router = useRouter();
   const [isActive, setIsActive] = useState(active);
   const [isPending, startTransition] = useTransition();
 
@@ -26,6 +28,7 @@ export function StockTagButton({
 
       if (!result?.error) {
         setIsActive(nextValue);
+        router.refresh();
       }
     });
   }
