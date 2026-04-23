@@ -44,44 +44,49 @@ export function DeleteMotorButton({
         {mode === "full" ? (
           <Button
             variant="outline"
-            className="h-11 flex-1 rounded-xl border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+            className="h-9 flex-1 rounded-lg border-zinc-200 text-zinc-500 hover:border-red-200 hover:bg-red-50 hover:text-red-700"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
             Excluir
           </Button>
         ) : (
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9 text-gray-400 hover:bg-red-50 hover:text-red-600"
+            className="h-8 w-8 text-zinc-400 hover:bg-red-50 hover:text-red-600"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-black">Excluir motor</DialogTitle>
-          <DialogDescription>
-            Tem certeza que deseja excluir o motor{" "}
-            <span className="font-semibold text-black">{descricao}</span>? Esta
-            acao nao pode ser desfeita.
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50">
+            <Trash2 className="h-5 w-5 text-red-600" />
+          </div>
+          <DialogTitle className="text-base font-semibold text-zinc-900">
+            Excluir motor
+          </DialogTitle>
+          <DialogDescription className="text-sm text-zinc-500">
+            Tem certeza que deseja excluir{" "}
+            <span className="font-medium text-zinc-900">{descricao}</span>? Esta ação não pode ser desfeita.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="gap-2">
+        <DialogFooter>
           <Button
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={isPending}
+            className="h-9 rounded-lg border-zinc-200 text-zinc-700"
           >
             Cancelar
           </Button>
           <Button
-            variant="destructive"
             onClick={handleDelete}
             disabled={isPending}
+            className="h-9 rounded-lg bg-red-600 text-white hover:bg-red-700"
           >
-            {isPending ? "Excluindo..." : "Excluir motor"}
+            {isPending ? "Excluindo..." : "Excluir"}
           </Button>
         </DialogFooter>
       </DialogContent>
