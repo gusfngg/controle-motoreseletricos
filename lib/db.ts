@@ -82,34 +82,52 @@ const COLUMN_DEFINITIONS = [
 let initPromise: Promise<void> | null = null;
 
 async function ensureMotorsTable() {
-  await getSql().unsafe(`
+  const sql = getSql();
+
+  await sql.unsafe(`
     CREATE TABLE IF NOT EXISTS motors (
       ${COLUMN_DEFINITIONS.join(",\n      ")}
     )
   `);
 
-  for (const definition of COLUMN_DEFINITIONS) {
-    const [columnName] = definition.split(" ");
+  // Fetch all existing columns in one round-trip, then only ALTER for missing ones
+  const existing = await sql.unsafe<{ column_name: string }[]>(
+    `SELECT column_name FROM information_schema.columns WHERE table_name = 'motors'`
+  );
+  const existingSet = new Set(existing.map((r) => r.column_name));
 
-    if (columnName === "id") {
-      continue;
-    }
+  const missing = COLUMN_DEFINITIONS.filter((def) => {
+    const [col] = def.split(" ");
+    return col !== "id" && !existingSet.has(col);
+  });
 
-    await getSql().unsafe(
-      `ALTER TABLE motors ADD COLUMN IF NOT EXISTS ${definition}`
-    );
+  for (const definition of missing) {
+    await sql.unsafe(`ALTER TABLE motors ADD COLUMN IF NOT EXISTS ${definition}`);
   }
 
-  await getSql().unsafe(`
-    CREATE INDEX IF NOT EXISTS motors_status_idx ON motors (status)
-  `);
-  await getSql().unsafe(`
-    CREATE INDEX IF NOT EXISTS motors_updated_at_idx ON motors (updated_at DESC)
-  `);
+  // Run index creation in parallel
+  await Promise.all([
+    sql.unsafe(`CREATE INDEX IF NOT EXISTS motors_status_idx ON motors (status)`),
+    sql.unsafe(`CREATE INDEX IF NOT EXISTS motors_updated_at_idx ON motors (updated_at DESC)`),
+  ]);
 }
 
 async function ensureUpdateTimestampTrigger() {
-  await getSql().unsafe(`
+  const sql = getSql();
+
+  // Check if trigger already exists before recreating it
+  const result = await sql.unsafe<{ exists: boolean }[]>(
+    `SELECT EXISTS (
+      SELECT 1 FROM pg_trigger
+      WHERE tgname = 'update_motors_timestamp'
+    ) as exists`
+  );
+
+  if (result[0]?.exists) {
+    return;
+  }
+
+  await sql.unsafe(`
     CREATE OR REPLACE FUNCTION set_motors_updated_at()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -119,11 +137,7 @@ async function ensureUpdateTimestampTrigger() {
     $$ LANGUAGE plpgsql
   `);
 
-  await getSql().unsafe(`
-    DROP TRIGGER IF EXISTS update_motors_timestamp ON motors
-  `);
-
-  await getSql().unsafe(`
+  await sql.unsafe(`
     CREATE TRIGGER update_motors_timestamp
     BEFORE UPDATE ON motors
     FOR EACH ROW
