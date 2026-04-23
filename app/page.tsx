@@ -23,8 +23,8 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="sticky top-0 z-40 border-b border-zinc-100 bg-white/90 backdrop-blur">
+    <div className="min-h-screen bg-zinc-50">
+      <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white shadow-sm">
         <div className="mx-auto flex h-14 max-w-screen-xl items-center justify-between px-5 sm:px-8">
           <div className="flex items-center gap-2.5">
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-950">
@@ -52,13 +52,13 @@ export default async function HomePage() {
       </header>
 
       <main className="mx-auto max-w-screen-xl px-5 py-8 sm:px-8">
-        <div className="mb-8 grid grid-cols-4 gap-px overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-100 sm:grid-cols-7">
+        <div className="mb-8 grid grid-cols-4 gap-px overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-200 shadow-sm sm:grid-cols-7">
           {statCards.map((card) => (
             <div key={card.label} className="bg-white px-4 py-4 sm:py-5">
               <p className={`text-2xl font-bold tabular-nums ${card.accent}`}>
                 {card.value}
               </p>
-              <p className="mt-0.5 text-[11px] font-medium text-zinc-400">
+              <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
                 {card.label}
               </p>
             </div>

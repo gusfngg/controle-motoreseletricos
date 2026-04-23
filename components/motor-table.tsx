@@ -188,13 +188,13 @@ export function MotorTable({ motors }: MotorTableProps) {
             placeholder="Buscar motor, local, aplicação..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-9 rounded-lg border-zinc-200 pl-9 text-sm placeholder:text-zinc-400 focus-visible:ring-zinc-300"
+            className="h-9 rounded-lg border-zinc-300 bg-white pl-9 text-sm placeholder:text-zinc-400 focus-visible:ring-zinc-400"
           />
         </div>
 
         <div className="flex items-center gap-2">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="h-9 w-auto min-w-40 rounded-lg border-zinc-200 text-sm">
+            <SelectTrigger className="h-9 w-auto min-w-40 rounded-lg border-zinc-300 bg-white text-sm">
               <SelectValue placeholder="Todos os status" />
             </SelectTrigger>
             <SelectContent>
@@ -228,7 +228,7 @@ export function MotorTable({ motors }: MotorTableProps) {
             {filtered.map((motor) => (
               <article
                 key={motor.id}
-                className="rounded-2xl border border-zinc-100 bg-white p-4"
+                className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -286,36 +286,36 @@ export function MotorTable({ motors }: MotorTableProps) {
           </div>
 
           {/* Desktop table */}
-          <div className="hidden overflow-hidden rounded-2xl border border-zinc-100 md:block">
+          <div className="hidden overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm md:block">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-zinc-100 bg-zinc-50/60">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">
+                <tr className="border-b border-zinc-200 bg-zinc-100">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500">
                     {renderSortButton("descricao", "Motor")}
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500">
                     {renderSortButton("status", "Status")}
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">Estoque</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">Qtd</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">Aplicações</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500">Estoque</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500">Qtd</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500">Aplicações</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500">
                     {renderSortButton("localizacao", "Localização")}
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500">
                     {renderSortButton("potencia_cv", "Dados técnicos")}
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500">
                     {renderSortButton("updated_at", "Atualizado")}
                   </th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-50">
+              <tbody className="divide-y divide-zinc-100">
                 {filtered.map((motor) => (
                   <tr
                     key={motor.id}
-                    className="group align-middle transition-colors hover:bg-zinc-50/50"
+                    className="group align-middle transition-colors hover:bg-zinc-50"
                   >
                     <td className="px-4 py-3.5">
                       <p className="font-medium text-zinc-900">{motor.descricao}</p>
