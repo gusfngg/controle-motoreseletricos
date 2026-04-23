@@ -27,6 +27,7 @@ function getSql() {
       idle_timeout: 20,
       max: 5,
       prepare: false,
+      onnotice: () => {},
     });
   }
 
