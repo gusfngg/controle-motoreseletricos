@@ -9,7 +9,6 @@ import {
   Package,
   Pencil,
   Search,
-  SlidersHorizontal,
   Zap,
 } from "lucide-react";
 import { DeleteMotorButton } from "@/components/delete-motor-button";
@@ -42,11 +41,7 @@ type SortDir = "asc" | "desc";
 
 function formatDateTime(value: string) {
   const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Sem data";
-  }
-
+  if (Number.isNaN(date.getTime())) return "—";
   return new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
     timeStyle: "short",
@@ -59,49 +54,36 @@ function isMaintenanceStatus(status: MotorStatus) {
 
 function getSortValue(motor: Motor, field: SortField) {
   switch (field) {
-    case "descricao":
-      return motor.descricao.toLowerCase();
-    case "status":
-      return motor.status;
-    case "localizacao":
-      return motor.localizacao.toLowerCase();
-    case "potencia_cv":
-      return motor.potencia_cv;
-    case "updated_at":
-      return motor.updated_at;
-    default:
-      return motor.updated_at;
+    case "descricao": return motor.descricao.toLowerCase();
+    case "status": return motor.status;
+    case "localizacao": return motor.localizacao.toLowerCase();
+    case "potencia_cv": return motor.potencia_cv;
+    case "updated_at": return motor.updated_at;
+    default: return motor.updated_at;
   }
 }
 
 function renderEquipamentos(equipamentos: string[], compact = false) {
-  if (equipamentos.length === 0) {
-    return <span className="text-slate-300">-</span>;
-  }
+  if (equipamentos.length === 0) return <span className="text-zinc-300">—</span>;
 
   const visible = compact ? equipamentos.slice(0, 2) : equipamentos.slice(0, 3);
   const extra = equipamentos.length - visible.length;
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {visible.map((equipamento) => (
+    <div className="flex flex-wrap gap-1.5">
+      {visible.map((eq) => (
         <span
-          key={equipamento}
+          key={eq}
           className={cn(
-            "rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 font-medium text-slate-600",
+            "rounded-md bg-zinc-50 px-2 py-0.5 font-medium text-zinc-600 ring-1 ring-zinc-200",
             compact ? "text-[11px]" : "text-xs"
           )}
         >
-          {equipamento}
+          {eq}
         </span>
       ))}
       {extra > 0 && (
-        <span
-          className={cn(
-            "rounded-full border border-dashed border-slate-300 px-2.5 py-1 font-medium text-slate-500",
-            compact ? "text-[11px]" : "text-xs"
-          )}
-        >
+        <span className={cn("rounded-md px-2 py-0.5 font-medium text-zinc-400 ring-1 ring-dashed ring-zinc-200", compact ? "text-[11px]" : "text-xs")}>
           +{extra}
         </span>
       )}
@@ -121,7 +103,6 @@ export function MotorTable({ motors }: MotorTableProps) {
       setSortDir(sortDir === "asc" ? "desc" : "asc");
       return;
     }
-
     setSortField(field);
     setSortDir("asc");
   }
@@ -132,28 +113,26 @@ export function MotorTable({ motors }: MotorTableProps) {
     if (deferredSearch.trim()) {
       const query = deferredSearch.toLowerCase();
       list = list.filter((motor) => {
-        const equipamentosText = motor.equipamentos.join(" ").toLowerCase();
-
+        const eqText = motor.equipamentos.join(" ").toLowerCase();
         return (
           motor.descricao.toLowerCase().includes(query) ||
           motor.localizacao.toLowerCase().includes(query) ||
           motor.marca.toLowerCase().includes(query) ||
           motor.numero_serie.toLowerCase().includes(query) ||
-          equipamentosText.includes(query)
+          eqText.includes(query)
         );
       });
     }
 
     if (statusFilter !== "todos") {
-      list = list.filter((motor) => motor.status === statusFilter);
+      list = list.filter((m) => m.status === statusFilter);
     }
 
     list.sort((a, b) => {
-      const aValue = getSortValue(a, sortField);
-      const bValue = getSortValue(b, sortField);
-
-      if (aValue < bValue) return sortDir === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortDir === "asc" ? 1 : -1;
+      const av = getSortValue(a, sortField);
+      const bv = getSortValue(b, sortField);
+      if (av < bv) return sortDir === "asc" ? -1 : 1;
+      if (av > bv) return sortDir === "asc" ? 1 : -1;
       return 0;
     });
 
@@ -161,16 +140,18 @@ export function MotorTable({ motors }: MotorTableProps) {
   }, [deferredSearch, motors, sortDir, sortField, statusFilter]);
 
   function renderSortButton(field: SortField, label: string) {
+    const active = sortField === field;
     return (
       <button
         type="button"
         onClick={() => handleSort(field)}
-        className="flex items-center gap-1 transition-colors hover:text-black"
+        className={cn(
+          "flex items-center gap-1 transition-colors hover:text-zinc-900",
+          active ? "text-zinc-900" : "text-zinc-400"
+        )}
       >
         {label}
-        <ArrowUpDown
-          className={`h-3 w-3 ${sortField === field ? "text-red-600" : "text-gray-400"}`}
-        />
+        <ArrowUpDown className={cn("h-3 w-3", active ? "text-red-500" : "text-zinc-300")} />
       </button>
     );
   }
@@ -181,15 +162,12 @@ export function MotorTable({ motors }: MotorTableProps) {
         status={motor.status}
         className={cn(
           "select-none",
-          isMaintenanceStatus(motor.status) &&
-            "cursor-pointer ring-1 ring-amber-200 hover:ring-amber-400"
+          isMaintenanceStatus(motor.status) && "cursor-pointer hover:opacity-80"
         )}
       />
     );
 
-    if (!isMaintenanceStatus(motor.status)) {
-      return badge;
-    }
+    if (!isMaintenanceStatus(motor.status)) return badge;
 
     return (
       <MaintenanceDialog motor={motor}>
@@ -201,222 +179,189 @@ export function MotorTable({ motors }: MotorTableProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="relative w-full lg:max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <Input
-              placeholder="Buscar motor, aplicacao ou local..."
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              className="h-11 rounded-xl border-slate-200 pl-10"
-            />
-          </div>
+    <div className="space-y-3">
+      {/* Search + filter bar */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+          <Input
+            placeholder="Buscar motor, local, aplicação..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-9 rounded-lg border-zinc-200 pl-9 text-sm placeholder:text-zinc-400 focus-visible:ring-zinc-300"
+          />
+        </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="hidden items-center gap-2 text-sm text-slate-500 sm:flex">
-              <SlidersHorizontal className="h-4 w-4" />
-              <span>Filtrar status</span>
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="h-11 rounded-xl sm:w-52">
-                <SelectValue placeholder="Todos os status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos os status</SelectItem>
-                {(Object.keys(STATUS_LABELS) as MotorStatus[]).map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {STATUS_LABELS[status]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-              {filtered.length} motor{filtered.length !== 1 ? "es" : ""}
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="h-9 w-auto min-w-40 rounded-lg border-zinc-200 text-sm">
+              <SelectValue placeholder="Todos os status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os status</SelectItem>
+              {(Object.keys(STATUS_LABELS) as MotorStatus[]).map((s) => (
+                <SelectItem key={s} value={s}>{STATUS_LABELS[s]}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <span className="text-xs text-zinc-400">
+            {filtered.length} motor{filtered.length !== 1 ? "es" : ""}
+          </span>
         </div>
       </div>
 
+      {/* Empty state */}
       {filtered.length === 0 ? (
-        <div className="rounded-[24px] border border-dashed border-slate-300 bg-white px-6 py-14 text-center text-slate-400 shadow-sm">
-          <Package className="mx-auto mb-3 h-10 w-10 opacity-35" />
-          <p className="text-sm font-medium text-slate-600">
-            Nenhum motor encontrado
-          </p>
-          <p className="mt-1 text-xs text-slate-400">
+        <div className="rounded-2xl border border-dashed border-zinc-200 px-6 py-16 text-center">
+          <Package className="mx-auto mb-3 h-8 w-8 text-zinc-200" />
+          <p className="text-sm font-medium text-zinc-600">Nenhum motor encontrado</p>
+          <p className="mt-1 text-xs text-zinc-400">
             {motors.length === 0
-              ? "Cadastre o primeiro motor para montar seu estoque e historico."
+              ? "Cadastre o primeiro motor para começar."
               : "Tente ajustar os filtros ou a busca."}
           </p>
         </div>
       ) : (
         <>
-          <div className="space-y-3 md:hidden">
+          {/* Mobile cards */}
+          <div className="space-y-2 md:hidden">
             {filtered.map((motor) => (
               <article
                 key={motor.id}
-                className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm"
+                className="rounded-2xl border border-zinc-100 bg-white p-4"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <p className="text-base font-semibold leading-tight text-slate-950">
+                  <div>
+                    <p className="font-semibold leading-tight text-zinc-900">
                       {motor.descricao}
                     </p>
-                    <p className="text-xs text-slate-500">
-                      {motor.marca || "Marca nao informada"}
+                    <p className="mt-0.5 text-xs text-zinc-400">
+                      {motor.marca || "Marca não informada"}
                     </p>
                   </div>
-                  <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
+                  <span className="shrink-0 rounded-md bg-zinc-50 px-2 py-0.5 text-[11px] font-medium text-zinc-400 ring-1 ring-zinc-200">
                     #{motor.id}
-                  </div>
+                  </span>
                 </div>
 
-                <div className="mt-4 flex flex-wrap items-center gap-2">
+                <div className="mt-3 flex flex-wrap items-center gap-2">
                   {renderStatus(motor)}
                   <StockTagButton id={motor.id} active={motor.em_estoque} compact />
                 </div>
 
-                <div className="mt-4 space-y-3">
-                  <div className="flex items-start gap-2 text-sm text-slate-600">
-                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-                    <span>{motor.localizacao || "Localizacao nao informada"}</span>
+                <div className="mt-3 space-y-2 text-sm text-zinc-500">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-300" />
+                    <span>{motor.localizacao || "Localização não informada"}</span>
                   </div>
-
-                  <div className="flex items-center gap-4 text-sm text-slate-600">
+                  <div className="flex items-center gap-4">
                     <span className="inline-flex items-center gap-1.5">
-                      <Gauge className="h-4 w-4 text-slate-400" />
-                      {motor.potencia_cv ? `${motor.potencia_cv} CV` : "-"}
+                      <Gauge className="h-3.5 w-3.5 text-zinc-300" />
+                      {motor.potencia_cv ? `${motor.potencia_cv} CV` : "—"}
                     </span>
                     <span className="inline-flex items-center gap-1.5">
-                      <Zap className="h-4 w-4 text-slate-400" />
-                      {motor.tensao ? `${motor.tensao} V` : "-"}
+                      <Zap className="h-3.5 w-3.5 text-zinc-300" />
+                      {motor.tensao ? `${motor.tensao} V` : "—"}
                     </span>
                     <span className="inline-flex items-center gap-1.5">
-                      <Package className="h-4 w-4 text-slate-400" />
+                      <Package className="h-3.5 w-3.5 text-zinc-300" />
                       {motor.quantidade ?? 1} un.
                     </span>
                   </div>
-
                   {renderEquipamentos(motor.equipamentos, true)}
-
-                  <p className="text-xs text-slate-400">
-                    Atualizado em {formatDateTime(motor.updated_at)}
-                  </p>
+                  <p className="text-xs text-zinc-300">{formatDateTime(motor.updated_at)}</p>
                 </div>
 
-                <div className="mt-4 flex gap-2">
-                  <Button asChild variant="outline" className="h-11 flex-1 rounded-xl">
+                <div className="mt-3 flex gap-2">
+                  <Button asChild variant="outline" className="h-9 flex-1 rounded-lg border-zinc-200 text-xs">
                     <Link href={`/motors/${motor.id}/edit`}>
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-3.5 w-3.5" />
                       Editar
                     </Link>
                   </Button>
-                  <DeleteMotorButton
-                    id={motor.id}
-                    descricao={motor.descricao}
-                    mode="full"
-                  />
+                  <DeleteMotorButton id={motor.id} descricao={motor.descricao} mode="full" />
                 </div>
               </article>
             ))}
           </div>
 
-          <div className="hidden overflow-hidden rounded-[26px] border border-slate-200 bg-white shadow-sm md:block">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      {renderSortButton("descricao", "Motor")}
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      {renderSortButton("status", "Status")}
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Estoque
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Qtd
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Aplicacoes
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      {renderSortButton("localizacao", "Localizacao")}
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      {renderSortButton("potencia_cv", "CV")}
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      {renderSortButton("updated_at", "Atualizado em")}
-                    </th>
-                    <th className="px-4 py-4 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Acoes
-                    </th>
+          {/* Desktop table */}
+          <div className="hidden overflow-hidden rounded-2xl border border-zinc-100 md:block">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-100 bg-zinc-50/60">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">
+                    {renderSortButton("descricao", "Motor")}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">
+                    {renderSortButton("status", "Status")}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">Estoque</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">Qtd</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">Aplicações</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">
+                    {renderSortButton("localizacao", "Localização")}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">
+                    {renderSortButton("potencia_cv", "Dados técnicos")}
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-400">
+                    {renderSortButton("updated_at", "Atualizado")}
+                  </th>
+                  <th className="px-4 py-3" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-50">
+                {filtered.map((motor) => (
+                  <tr
+                    key={motor.id}
+                    className="group align-middle transition-colors hover:bg-zinc-50/50"
+                  >
+                    <td className="px-4 py-3.5">
+                      <p className="font-medium text-zinc-900">{motor.descricao}</p>
+                      <p className="mt-0.5 text-xs text-zinc-400">
+                        {motor.marca || "—"}
+                      </p>
+                    </td>
+                    <td className="px-4 py-3.5">{renderStatus(motor)}</td>
+                    <td className="px-4 py-3.5">
+                      <StockTagButton id={motor.id} active={motor.em_estoque} compact />
+                    </td>
+                    <td className="px-4 py-3.5 text-sm font-semibold text-zinc-700">
+                      {motor.quantidade ?? 1}
+                    </td>
+                    <td className="px-4 py-3.5">{renderEquipamentos(motor.equipamentos)}</td>
+                    <td className="px-4 py-3.5 text-sm text-zinc-500">
+                      {motor.localizacao || "—"}
+                    </td>
+                    <td className="px-4 py-3.5 text-zinc-700">
+                      {motor.potencia_cv ? `${motor.potencia_cv} CV` : "—"}
+                      {motor.tensao ? (
+                        <p className="mt-0.5 text-xs text-zinc-400">{motor.tensao} V</p>
+                      ) : null}
+                    </td>
+                    <td className="px-4 py-3.5 text-xs text-zinc-400">
+                      {formatDateTime(motor.updated_at)}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900"
+                        >
+                          <Link href={`/motors/${motor.id}/edit`}>
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Link>
+                        </Button>
+                        <DeleteMotorButton id={motor.id} descricao={motor.descricao} />
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filtered.map((motor) => (
-                    <tr
-                      key={motor.id}
-                      className="align-top transition-colors hover:bg-slate-50/80"
-                    >
-                      <td className="px-4 py-4">
-                        <p className="font-semibold text-slate-950">
-                          {motor.descricao}
-                        </p>
-                        <p className="mt-1 text-xs text-slate-400">
-                          {motor.marca || "Marca nao informada"}
-                        </p>
-                      </td>
-                      <td className="px-4 py-4">{renderStatus(motor)}</td>
-                      <td className="px-4 py-4">
-                        <StockTagButton id={motor.id} active={motor.em_estoque} compact />
-                      </td>
-                      <td className="px-4 py-4 text-sm font-semibold text-slate-700">
-                        {motor.quantidade ?? 1}
-                      </td>
-                      <td className="px-4 py-4 text-slate-600">
-                        {renderEquipamentos(motor.equipamentos)}
-                      </td>
-                      <td className="px-4 py-4 text-sm text-slate-600">
-                        {motor.localizacao || "-"}
-                      </td>
-                      <td className="px-4 py-4 text-slate-700">
-                        {motor.potencia_cv ? `${motor.potencia_cv} CV` : "-"}
-                        {motor.tensao ? (
-                          <p className="mt-1 text-xs text-slate-400">
-                            {motor.tensao} V
-                          </p>
-                        ) : null}
-                      </td>
-                      <td className="px-4 py-4">
-                        <p className="font-medium text-slate-700">
-                          {formatDateTime(motor.updated_at)}
-                        </p>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button
-                            asChild
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 text-gray-400 hover:bg-gray-100 hover:text-black"
-                          >
-                            <Link href={`/motors/${motor.id}/edit`}>
-                              <Pencil className="h-4 w-4" />
-                            </Link>
-                          </Button>
-                          <DeleteMotorButton id={motor.id} descricao={motor.descricao} />
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </>
       )}
