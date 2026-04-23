@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getMotors, getStats } from "@/lib/actions";
 import { Motor, MotorStats } from "@/types/motor";
 import { MotorTable } from "@/components/motor-table";
-import { CurrentTimeBadge } from "@/components/current-time-badge";
 import { Button } from "@/components/ui/button";
 import { Plus, Zap } from "lucide-react";
 
@@ -36,7 +35,6 @@ export default async function HomePage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <CurrentTimeBadge />
             <Button
               asChild
               size="sm"
