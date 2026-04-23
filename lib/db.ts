@@ -65,6 +65,7 @@ const COLUMN_DEFINITIONS = [
   "ip_protecao TEXT DEFAULT ''",
   "status TEXT DEFAULT 'disponivel'",
   "em_estoque INTEGER DEFAULT 0",
+  "quantidade INTEGER DEFAULT 1",
   "equipamentos TEXT DEFAULT '[]'",
   "localizacao TEXT DEFAULT ''",
   "observacoes TEXT DEFAULT ''",

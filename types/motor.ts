@@ -26,6 +26,7 @@ export interface Motor {
   ip_protecao: string;
   status: MotorStatus;
   em_estoque: boolean;
+  quantidade: number;
   equipamentos: string[];
   localizacao: string;
   observacoes: string;
@@ -47,6 +48,7 @@ export interface MotorFormData {
   ip_protecao: string;
   status: MotorStatus;
   em_estoque: boolean;
+  quantidade: number;
   equipamentos: string[];
   localizacao: string;
   observacoes: string;

@@ -293,6 +293,10 @@ export function MotorTable({ motors }: MotorTableProps) {
                       <Zap className="h-4 w-4 text-slate-400" />
                       {motor.tensao ? `${motor.tensao} V` : "-"}
                     </span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Package className="h-4 w-4 text-slate-400" />
+                      {motor.quantidade ?? 1} un.
+                    </span>
                   </div>
 
                   {renderEquipamentos(motor.equipamentos, true)}
@@ -334,6 +338,9 @@ export function MotorTable({ motors }: MotorTableProps) {
                       Estoque
                     </th>
                     <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      Qtd
+                    </th>
+                    <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
                       Aplicacoes
                     </th>
                     <th className="px-4 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -367,6 +374,9 @@ export function MotorTable({ motors }: MotorTableProps) {
                       <td className="px-4 py-4">{renderStatus(motor)}</td>
                       <td className="px-4 py-4">
                         <StockTagButton id={motor.id} active={motor.em_estoque} compact />
+                      </td>
+                      <td className="px-4 py-4 text-sm font-semibold text-slate-700">
+                        {motor.quantidade ?? 1}
                       </td>
                       <td className="px-4 py-4 text-slate-600">
                         {renderEquipamentos(motor.equipamentos)}
