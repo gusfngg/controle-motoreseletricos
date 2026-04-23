@@ -77,6 +77,7 @@ export function MotorForm({ motor }: MotorFormProps) {
       ip_protecao: ipProtecao,
       status,
       em_estoque: formData.get("em_estoque") === "on",
+      quantidade: Math.max(1, parseInt(String(formData.get("quantidade") ?? "1"), 10) || 1),
       equipamentos: parseEquipamentos(formData.get("equipamentos")),
       localizacao: String(formData.get("localizacao") ?? ""),
       observacoes: String(formData.get("observacoes") ?? ""),
@@ -128,23 +129,39 @@ export function MotorForm({ motor }: MotorFormProps) {
           </div>
         </div>
 
-        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-          <input
-            type="checkbox"
-            name="em_estoque"
-            defaultChecked={motor?.em_estoque}
-            className="h-4 w-4 accent-white"
-          />
-          <div className="space-y-0.5">
-            <span className="inline-flex items-center gap-2 text-sm font-semibold">
-              <Archive className="h-4 w-4" />
-              Tag de estoque
-            </span>
-            <p className="text-xs text-white/65">
-              Marque quando o motor estiver disponivel no estoque para reposicao.
-            </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <label className="flex flex-1 cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+            <input
+              type="checkbox"
+              name="em_estoque"
+              defaultChecked={motor?.em_estoque}
+              className="h-4 w-4 accent-white"
+            />
+            <div className="space-y-0.5">
+              <span className="inline-flex items-center gap-2 text-sm font-semibold">
+                <Archive className="h-4 w-4" />
+                Tag de estoque
+              </span>
+              <p className="text-xs text-white/65">
+                Marque quando o motor estiver disponivel no estoque para reposicao.
+              </p>
+            </div>
+          </label>
+
+          <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+            <div className="space-y-0.5">
+              <span className="text-sm font-semibold">Quantidade</span>
+              <p className="text-xs text-white/65">Unidades disponiveis</p>
+            </div>
+            <input
+              type="number"
+              name="quantidade"
+              min="1"
+              defaultValue={motor?.quantidade ?? 1}
+              className="ml-auto w-20 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-center text-sm font-semibold text-white [appearance:textfield] focus:outline-none focus:ring-2 focus:ring-white/30 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
           </div>
-        </label>
+        </div>
       </div>
 
       {error && (
