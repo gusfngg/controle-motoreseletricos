@@ -53,7 +53,7 @@ export function MaintenanceDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base font-semibold text-zinc-900">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50">
